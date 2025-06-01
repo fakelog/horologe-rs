@@ -14,7 +14,6 @@ use sea_orm::{
     QueryFilter,
 };
 use sea_orm::{ColumnTrait, QueryOrder, QuerySelect};
-use std::str::FromStr;
 use uuid::Uuid;
 
 pub struct SeaStorage {
@@ -50,7 +49,7 @@ impl TaskStorage for SeaStorage {
     }
 
     async fn get_due_tasks(&self, limit: u64) -> Result<Vec<Task>> {
-        let now = chrono::Utc::now().naive_local();
+        let now = chrono::Utc::now().naive_utc();
 
         let tasks = Tasks::find()
             .filter(tasks::Column::ScheduledAt.lte(now))
@@ -60,7 +59,9 @@ impl TaskStorage for SeaStorage {
             .all(&self.db)
             .await?;
 
-        Ok(tasks.into_iter().map(|t| Task::from(t)).collect())
+        let tasks = tasks.into_iter().map(Task::from).collect();
+
+        Ok(tasks)
     }
 
     async fn update_task_status(&self, task_id: Uuid, status: TaskStatus) -> Result<()> {

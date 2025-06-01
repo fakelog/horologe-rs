@@ -39,7 +39,7 @@ async fn main() -> Result<()> {
 }
 
 async fn run_app() -> Result<()> {
-    let now = Local::now().naive_local();
+    let now = chrono::Utc::now().naive_utc();
     let execution_time = now + Duration::minutes(1);
 
     Job::name("send_email").at(execution_time, None).await?;
