@@ -8,7 +8,7 @@ struct EmailHandler;
 
 #[async_trait::async_trait]
 impl TaskHandler for EmailHandler {
-    async fn handle(&self) -> Result<()> {
+    async fn handle(&self, payload: Option<serde_json::Value>) -> Result<()> {
         println!("Sending email");
         Ok(())
     }

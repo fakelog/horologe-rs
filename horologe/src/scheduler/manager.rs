@@ -51,7 +51,7 @@ impl TaskScheduler {
                 .await?;
 
             if let Some(handler) = self.handlers.get(&task.name) {
-                match handler.handle().await {
+                match handler.handle(task.payload).await {
                     Ok(_) => {
                         storage
                             .update_task_status(task.id, TaskStatus::Completed)
