@@ -12,6 +12,7 @@ impl From<Model> for Task {
             name: model.name,
             scheduled_at: model.scheduled_at,
             status: model.status.parse().unwrap_or(TaskStatus::Pending),
+            payload: model.payload,
         }
     }
 }
@@ -23,6 +24,7 @@ impl From<Task> for ActiveModel {
             name: Set(task.name),
             scheduled_at: Set(task.scheduled_at),
             status: Set(task.status.to_string()),
+            payload: Set(task.payload),
         }
     }
 }

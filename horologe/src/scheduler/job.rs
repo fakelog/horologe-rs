@@ -13,9 +13,9 @@ impl<'a> Job<'a> {
         Self { name: value.into() }
     }
 
-    pub async fn at(&self, time: NaiveDateTime) -> Result<()> {
+    pub async fn at(&self, time: NaiveDateTime, payload: Option<serde_json::Value>) -> Result<()> {
         let storage = get_storage()?;
-        storage.create_task(&self.name, time).await?;
+        storage.create_task(&self.name, time, payload).await?;
         Ok(())
     }
 }

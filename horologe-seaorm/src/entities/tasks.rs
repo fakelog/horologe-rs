@@ -10,6 +10,7 @@ pub struct Model {
     pub name: String,
     pub scheduled_at: DateTime,
     pub status: String,
+    pub payload: Option<Json>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

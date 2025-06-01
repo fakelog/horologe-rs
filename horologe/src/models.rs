@@ -1,4 +1,5 @@
 use chrono::NaiveDateTime;
+use serde_json::Value;
 use std::{fmt, str::FromStr};
 use uuid::Uuid;
 
@@ -8,6 +9,7 @@ pub struct Task {
     pub name: String,
     pub scheduled_at: NaiveDateTime,
     pub status: TaskStatus,
+    pub payload: Option<Value>,
 }
 
 #[derive(Debug, Clone, PartialEq)]

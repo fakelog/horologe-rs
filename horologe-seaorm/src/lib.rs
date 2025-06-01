@@ -29,22 +29,24 @@ impl SeaStorage {
 
 #[async_trait]
 impl TaskStorage for SeaStorage {
-    async fn create_task(&self, name: &str, scheduled_at: NaiveDateTime) -> Result<Task> {
+    async fn create_task(
+        &self,
+        name: &str,
+        scheduled_at: NaiveDateTime,
+        payload: Option<serde_json::Value>,
+    ) -> Result<Task> {
         let id = Uuid::now_v7();
-        let task = ActiveModel {
-            id: Set(id),
-            name: Set(name.to_string()),
-            scheduled_at: Set(scheduled_at),
-            status: Set(TaskStatus::Pending.to_string()),
+        let task = Task {
+            id,
+            name: name.to_string(),
+            scheduled_at,
+            status: TaskStatus::Pending,
+            payload: payload,
         };
 
-        let task = task.insert(&self.db).await?;
-        Ok(Task {
-            id: task.id,
-            name: task.name,
-            scheduled_at: task.scheduled_at,
-            status: TaskStatus::from_str(&task.status)?,
-        })
+        ActiveModel::from(task.clone()).insert(&self.db).await?;
+
+        Ok(task)
     }
 
     async fn get_due_tasks(&self, limit: u64) -> Result<Vec<Task>> {
@@ -58,15 +60,7 @@ impl TaskStorage for SeaStorage {
             .all(&self.db)
             .await?;
 
-        Ok(tasks
-            .into_iter()
-            .map(|t| Task {
-                id: t.id,
-                name: t.name,
-                scheduled_at: t.scheduled_at,
-                status: TaskStatus::from_str(&t.status).unwrap_or(TaskStatus::Pending),
-            })
-            .collect())
+        Ok(tasks.into_iter().map(|t| Task::from(t)).collect())
     }
 
     async fn update_task_status(&self, task_id: Uuid, status: TaskStatus) -> Result<()> {

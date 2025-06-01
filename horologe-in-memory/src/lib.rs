@@ -30,13 +30,19 @@ impl InMemoryStorage {
 
 #[async_trait]
 impl TaskStorage for InMemoryStorage {
-    async fn create_task(&self, name: &str, scheduled_at: NaiveDateTime) -> Result<Task> {
+    async fn create_task(
+        &self,
+        name: &str,
+        scheduled_at: NaiveDateTime,
+        payload: Option<serde_json::Value>,
+    ) -> Result<Task> {
         let id = Uuid::new_v4();
         let task = Task {
             id,
             name: name.to_string(),
             scheduled_at,
             status: TaskStatus::Pending,
+            payload: payload,
         };
 
         let mut tasks = self.tasks.write().await;

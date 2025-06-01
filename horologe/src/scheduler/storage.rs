@@ -9,7 +9,12 @@ use crate::models::{Task, TaskStatus};
 
 #[async_trait]
 pub trait TaskStorage: Send + Sync {
-    async fn create_task(&self, name: &str, scheduled_at: NaiveDateTime) -> Result<Task>;
+    async fn create_task(
+        &self,
+        name: &str,
+        scheduled_at: NaiveDateTime,
+        payload: Option<serde_json::Value>,
+    ) -> Result<Task>;
     async fn get_due_tasks(&self, limit: u64) -> Result<Vec<Task>>;
     async fn update_task_status(&self, task_id: Uuid, status: TaskStatus) -> Result<()>;
     async fn remove_task(&self, task_id: Uuid) -> Result<()>;
